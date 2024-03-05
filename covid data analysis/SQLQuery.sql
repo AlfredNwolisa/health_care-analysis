@@ -77,10 +77,14 @@ GROUP BY [date]
 ORDER BY 1,2
 
 
---
-
-SELECT *
+--total population vs vaccine
+--rolling vaccination per country
+SELECT d.continent, d.location, d.date, d.population, v.new_vaccinations
+, nullif(SUM(cast(v.new_vaccinations as BIGINT)) OVER (partition by d.location ORDER by d.location, d.date),0) as rolling_vaccinated_people
 from covid_deaths d
 join  covid_vaccinations v
-on d.locations = v.locations
+on d.location = v.location
 and d.date = v.date
+where d.continent is not NULL
+AND d.location = 'Nigeria'    
+ORDER by    1,2,3
